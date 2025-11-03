@@ -1,0 +1,8 @@
+Start server:
+  python -m http.server
+  Open browser and go to http://localhost:8000
+
+To open from phone:
+  Laptop and phone on same wifi
+  On laptop, find IP (ipconfig, look for IPv4 address)
+  On phone, open browser and go to the address

@@ -1,0 +1,18 @@
+{
+  "core": [
+    { "name": "History", "color": "#e74c3c" },
+    { "name": "Science", "color": "#3498db" },
+    { "name": "Geography", "color": "#2ecc71" },
+    { "name": "Art", "color": "#f1c40f" }
+  ],
+  "specialisations": {
+    "Explorer": [
+      { "name": "Travel", "color": "#1abc9c" },
+      { "name": "Nature", "color": "#27ae60" }
+    ],
+    "Scholar": [
+      { "name": "Philosophy", "color": "#9b59b6" },
+      { "name": "Literature", "color": "#8e44ad" }
+    ]
+  }
+}
