@@ -24,38 +24,37 @@ const lightenColor = (color, percent) => {
 };
 
 const PlayerBoxes = ({ playerName, categories }) => {
-  const [boxStates, setBoxStates] = useState({});
+  const [boxStates, setBoxStates] = useState(() =>
+    Object.fromEntries(categories.map(c => [c.name, false]))
+  );
 
-  useEffect(() => {
-    const initState = {};
-    categories.forEach((cat) => {
-      initState[cat.name] = false;
-    });
-    setBoxStates(initState);
-  }, [categories]);
+  const toggleBox = (name) =>
+    setBoxStates(prev => ({ ...prev, [name]: !prev[name] }));
 
-  const toggleBox = (name) => {
-    setBoxStates((prev) => ({ ...prev, [name]: !prev[name] }));
+  const lightenColor = (hex, amount = 60) => {
+    const num = parseInt(hex.replace("#", ""), 16);
+    const r = Math.min(255, (num >> 16) + amount);
+    const g = Math.min(255, ((num >> 8) & 0xff) + amount);
+    const b = Math.min(255, (num & 0xff) + amount);
+    return `rgb(${r},${g},${b})`;
   };
 
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-2">{playerName}</h2>
       <div className="grid grid-cols-3 gap-2">
-        {categories.map((cat) => {
+        {categories.map(cat => {
           const isActive = boxStates[cat.name];
-          const baseColor = cat.color || "#888";
-          const paleColor = lightenColor(baseColor, 60);
-
+          const bg = isActive ? cat.color : lightenColor(cat.color, 120);
           return (
             <div
               key={cat.name}
               onClick={() => toggleBox(cat.name)}
-              className={`cursor-pointer rounded-lg border-2 transition-all duration-200 text-center p-2 text-sm select-none`}
+              className="cursor-pointer rounded-lg border-2 text-center p-2 text-sm select-none transition-all"
               style={{
-                borderColor: baseColor,
-                backgroundColor: isActive ? baseColor : paleColor,
-                color: isActive ? "white" : "#333",
+                borderColor: cat.color,
+                backgroundColor: bg,
+                color: isActive ? "white" : "#222"
               }}
             >
               {cat.name}
@@ -66,5 +65,6 @@ const PlayerBoxes = ({ playerName, categories }) => {
     </div>
   );
 };
+
 
 export default PlayerBoxes;

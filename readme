@@ -1,5 +1,5 @@
 Start server:
-  python -m http.server
+  python -m http.server (if unfound later: python -m http.server 8000 --bind 0.0.0.0)
   Open browser and go to http://localhost:8000
 
 To open from phone:

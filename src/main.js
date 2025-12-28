@@ -37,28 +37,24 @@ showAnswerBtn.addEventListener("click", () => {
   saveState();
 });
 
-// ===== TIMER LOGIC =====
+// ===== TIMER =====
 let timerInterval = null;
 let timeRemaining = 0;
 const timerCircle = document.getElementById("timer-progress");
 const timerText = document.getElementById("timer-text");
 const timerDurationInput = document.getElementById("timer-duration");
 const startTimerBtn = document.getElementById("start-timer-btn");
-
 const FULL_DASH_ARRAY = 283;
 
 function startTimer() {
   clearInterval(timerInterval);
   const duration = parseInt(timerDurationInput.value, 10);
   if (isNaN(duration) || duration <= 0) return;
-
   timeRemaining = duration;
   updateTimerDisplay();
-
   timerInterval = setInterval(() => {
     timeRemaining--;
     updateTimerDisplay();
-
     if (timeRemaining <= 0) {
       clearInterval(timerInterval);
       timerText.textContent = "Time’s up!";
@@ -71,13 +67,12 @@ function updateTimerDisplay() {
   const ratio = timeRemaining / parseInt(timerDurationInput.value, 10);
   const progress = ratio * FULL_DASH_ARRAY;
   timerCircle.style.strokeDashoffset = FULL_DASH_ARRAY - progress;
-  timerCircle.style.stroke =
-    ratio > 0.5 ? "green" : ratio > 0.25 ? "orange" : "red";
+  timerCircle.style.stroke = ratio > 0.5 ? "green" : ratio > 0.25 ? "orange" : "red";
 }
 
 startTimerBtn.addEventListener("click", startTimer);
 
-// ===== Scoreboard =====
+// ===== SCOREBOARD =====
 const addPlayerBtn = document.getElementById("add-player-btn");
 const newPlayerName = document.getElementById("new-player-name");
 const playerList = document.getElementById("player-list");
@@ -85,16 +80,16 @@ const playerList = document.getElementById("player-list");
 let players = [];
 let categories = [];
 
-// Load categories
+// ===== Load categories and then render =====
 fetch("categories.json")
   .then(res => res.json())
   .then(data => {
     categories = data.core || [];
-    console.log("Loaded categories:", categories);
+    // console.log("Loaded categories:", categories);
     loadState();
     renderPlayers();
   })
-  .catch(err => console.error("Failed to load categories.json:", err));
+  .catch(err => console.error("Failed to load categories:", err));
 
 addPlayerBtn.addEventListener("click", () => {
   const name = newPlayerName.value.trim();
@@ -105,9 +100,16 @@ addPlayerBtn.addEventListener("click", () => {
   saveState();
 });
 
-// ===== Rendering and state =====
+// ===== Rendering =====
 function renderPlayers() {
   playerList.innerHTML = "";
+
+  if (categories.length === 0) {
+    console.error("Cannot render players: Categories array is empty.");
+    console.warn("No categories loaded, skipping render");
+    return;
+  }
+
   players.forEach((player, idx) => {
     const li = document.createElement("li");
     li.classList.add("player-entry");
@@ -124,13 +126,17 @@ function renderPlayers() {
       box.dataset.playerIndex = idx;
       box.dataset.category = cat.name;
 
-      const filled = getBoxState(idx, cat.name);
-      applyBoxStyle(box, cat.color, filled);
+      // set initial appearance from storage
+      const initial = !!getBoxState(idx, cat.name);
+      applyBoxStyle(box, cat.color, initial);
 
+      // click handler: read current DOM state, compute new, persist, apply
       box.addEventListener("click", () => {
-        const newState = !filled;
-        setBoxState(idx, cat.name, newState);
-        applyBoxStyle(box, cat.color, newState);
+        const currentlyFilled = box.classList.contains("filled"); // read live
+        const newState = !currentlyFilled;
+        setBoxState(idx, cat.name, newState);    // persist
+        applyBoxStyle(box, cat.color, newState); // update DOM immediately
+        saveState();                              // optional: keep full state saved
       });
 
       boxesContainer.appendChild(box);
@@ -140,6 +146,8 @@ function renderPlayers() {
     li.appendChild(boxesContainer);
     playerList.appendChild(li);
   });
+
+  console.log(document.querySelectorAll(".player-box").length, "boxes rendered");
 }
 
 function applyBoxStyle(box, color, filled) {
@@ -189,9 +197,6 @@ function loadState() {
     answerText.classList.remove("hidden");
     answerText.textContent = state.lastAnswer || "";
   }
-  if (state.boxes) {
-    localStorage.setItem("trivial_state", JSON.stringify(state));
-  }
 }
 
 function getBoxState(playerIdx, catName) {
@@ -225,8 +230,7 @@ showWinnerBtn.addEventListener("click", () => {
     return;
   }
   const winner = prompt("Who is the winner?");
-  document.getElementById("winner-name").textContent =
-    winner || "No winner selected";
+  document.getElementById("winner-name").textContent = winner || "No winner selected";
   showScreen(winnerScreen);
 });
 
@@ -244,5 +248,4 @@ resetBtn.addEventListener("click", () => {
   }
 });
 
-// ===== Hooks =====
 window.addEventListener("beforeunload", saveState);
