@@ -399,3 +399,74 @@ function hexToPale(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+// ===== Rules Modal =====
+const rulesBtnStart = document.getElementById("rules-btn-start");
+const rulesBtnGame = document.getElementById("rules-btn-game");
+const rulesModal = document.getElementById("rules-modal");
+const rulesText = document.getElementById("rules-text");
+const modalClose = document.querySelector(".modal-close");
+
+// Convert Markdown to simple HTML (basic parser)
+function markdownToHtml(markdown) {
+  return markdown
+    .replace(/^# (.*?)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^\d+\. (.*?)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*?<\/li>)/s, '<ol>$1</ol>')
+    .replace(/^- (.*?)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*?<\/li>)/s, (match) => {
+      if (!match.includes('<ol>') && !match.includes('<ul>')) {
+        return '<ul>' + match + '</ul>';
+      }
+      return match;
+    })
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[oh]l>|<\/[oh]l>|<li>|<h)/gm, '<p>')
+    .replace(/$/gm, (match, offset, string) => {
+      if (!string[offset + 1] || string[offset + 1] === '\n') {
+        const before = string.substring(Math.max(0, offset - 3), offset);
+        if (before !== '</p>' && before !== '</li>' && before !== '</h1>' && before !== '</h2>') {
+          return '</p>';
+        }
+      }
+      return match;
+    });
+}
+
+// Load and display rules
+function loadRules() {
+  fetch("rules.md")
+    .then(res => res.text())
+    .then(data => {
+      rulesText.innerHTML = markdownToHtml(data);
+    })
+    .catch(err => console.error("Failed to load rules:", err));
+}
+
+if (rulesBtnStart) {
+  rulesBtnStart.addEventListener("click", () => {
+    loadRules();
+    rulesModal.classList.remove("hidden");
+  });
+}
+
+if (rulesBtnGame) {
+  rulesBtnGame.addEventListener("click", () => {
+    loadRules();
+    rulesModal.classList.remove("hidden");
+  });
+}
+
+modalClose.addEventListener("click", () => {
+  rulesModal.classList.add("hidden");
+});
+
+rulesModal.addEventListener("click", (e) => {
+  if (e.target === rulesModal) {
+    rulesModal.classList.add("hidden");
+  }
+});
+

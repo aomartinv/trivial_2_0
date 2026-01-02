@@ -13,11 +13,13 @@
   <section id="start-screen" class="screen active">
     <h1>Trivial 2.0</h1>
     <p>Donde un juego se perdió, otro aparece</p>
+    <button id="rules-btn-start" class="rules-btn">📖 Reglas</button>
     <button id="start-btn">Empieza el juego!</button>
   </section>
 
     <!-- Main Game Screen -->
     <section id="game-screen" class="screen">
+    <button id="rules-btn-game" class="rules-btn">📖 Reglas</button>
     <div id="game-container">
         <div id="question-panel" class="panel">
         <h2>Panel de preguntas</h2>
@@ -69,5 +71,13 @@
     <p id="winner-name">TBD</p>
     <button id="restart-btn">Pantalla de inicio</button>
   </section>
+
+  <!-- Add before closing </body> tag -->
+  <div id="rules-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <div id="rules-text"></div>
+    </div>
+  </div>
 </body>
 </html>

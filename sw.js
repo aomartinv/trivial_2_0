@@ -1,6 +1,7 @@
 const CACHE_NAME = 'trivial-v1';
 const urlsToCache = [
   'index.html',
+  'rules.md',  // Add this
   'style.css',
   'src/main.js',
   'questions.csv',
