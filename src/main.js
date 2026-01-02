@@ -44,10 +44,10 @@ resetGameBtn.addEventListener("click", () => {
 // ===== Load questions =====
 let questions = [];
 
-fetch("../questions.json")  // Already correct
-  .then(res => res.json())
+fetch("../questions.csv")  // Change to CSV
+  .then(res => res.text())
   .then(data => {
-    questions = data || [];
+    questions = parseCSV(data);
     console.log("Loaded questions:", questions.length);
   })
   .catch(err => console.error("Failed to load questions:", err));
@@ -79,12 +79,13 @@ showQuestionBtn.addEventListener("click", () => {
   }
   const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
   currentQuestion = filteredQuestions[randomIndex].question;
-  currentAnswer = filteredQuestions[randomIndex].answers[0];
+  currentAnswer = filteredQuestions[randomIndex].answer;  // Change to single answer
   const actualCategory = filteredQuestions[randomIndex].category;  // Get actual category
   questionArea.classList.remove("hidden");
   questionText.textContent = `${actualCategory}: ${currentQuestion}`;  // Show actual category
   answerText.classList.add("hidden");
   saveState();
+  console.log("Selected category:", selectedCategory, "Filtered questions:", filteredQuestions.length);
 });
 
 showAnswerBtn.addEventListener("click", () => {
@@ -149,19 +150,15 @@ fetch("../categories.json")
     categories = data.core || [];
     specialisations = data.specialisations || {};
     // Populate categorySelect
-    categorySelect.innerHTML = '<option value="">Select Category</option>';
+    categorySelect.innerHTML = '<option value="Random">Random</option>';  // Change to Random as default
     categories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat.name;
       option.textContent = cat.name;
       categorySelect.appendChild(option);
     });
-    // Add Random option
-    const randomOption = document.createElement("option");
-    randomOption.value = "Random";
-    randomOption.textContent = "Random";
-    categorySelect.appendChild(randomOption);
-    categorySelect.value = categories[0]?.name || "Random";  // Default to first category or Random
+    // Remove the separate Random add, as it's now first
+    categorySelect.value = "Random";  // Set default
     loadState();
     renderPlayers();
     renderCategoryLegend();
@@ -372,5 +369,14 @@ function renderCategoryLegend() {
       <span>${cat.name}</span>
     `;
     legendContainer.appendChild(item);
+  });
+}
+
+// ===== CSV Parsing =====
+function parseCSV(csv) {
+  const lines = csv.trim().split(/\r?\n/);  // Handle Windows line endings
+  return lines.slice(1).map(line => {
+    const [question, answer, category] = line.split(',');
+    return { question, answer, category };
   });
 }
