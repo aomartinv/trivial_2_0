@@ -44,7 +44,7 @@ resetGameBtn.addEventListener("click", () => {
 // ===== Load questions =====
 let questions = [];
 
-fetch("../questions.csv")  // Change to CSV
+fetch("questions.csv")  // Remove ../
   .then(res => res.text())
   .then(data => {
     questions = parseCSV(data);
@@ -144,21 +144,20 @@ let players = [];
 let categories = [];
 let specialisations = {};
 
-fetch("../categories.json")
+fetch("categories.json")  // Remove ../
   .then(res => res.json())
   .then(data => {
     categories = data.core || [];
     specialisations = data.specialisations || {};
     // Populate categorySelect
-    categorySelect.innerHTML = '<option value="Random">Random</option>';  // Change to Random as default
+    categorySelect.innerHTML = '<option value="Random">Random</option>';
     categories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat.name;
       option.textContent = cat.name;
       categorySelect.appendChild(option);
     });
-    // Remove the separate Random add, as it's now first
-    categorySelect.value = "Random";  // Set default
+    categorySelect.value = "Random";
     loadState();
     renderPlayers();
     renderCategoryLegend();

@@ -2,7 +2,7 @@
   "name": "Trivial 2.0",
   "short_name": "Trivial",
   "description": "A trivia game app",
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#fafafa",
   "theme_color": "#3498db",

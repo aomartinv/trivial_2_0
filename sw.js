@@ -1,15 +1,15 @@
 const CACHE_NAME = 'trivial-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/src/main.js',
-  '/questions.csv',
-  '/categories.json',
-  '/assets/bro-boda.jpeg',
-  '/assets/first_victory.png',
-  '/assets/sprechen-sie-matlab.jpg'
-  // Add any other images or files
+  'index.html',
+  'style.css',
+  'src/main.js',
+  'questions.csv',
+  'categories.json',
+  'assets/bro-boda.jpeg',
+  'assets/first_victory.png',
+  'assets/sprechen-sie-matlab.jpg',
+  'assets/icon-192.png',
+  'assets/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
