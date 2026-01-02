@@ -1,14 +1,13 @@
 # Trivial 2.0 - Reglas
 
-Bienvenidos a esta segunda edición del trivial (2.0)! Aquí están las reglas. Como clarificación, tu móvil/tablet/ordenador/etc. con esta pantalla será tu tablero y marcador de puntos, pero el juego es completamente offline!
+Bienvenidos a esta segunda edición del trivial (2.0)! Aquí están las reglas. Como clarificación, tu móvil/tablet/ordenador/etc. con esta pantalla será tu tablero y marcador de puntos, pero el juego es completamente en persona!
 
 Estas reglas son orientativas, pero una vez entendido el espíritu del juego, sed libres de modificarlas si mejoran la experiencia.
 
 ## Preparación del juego
-
-1. Pulsa el botón Empieza el juego!¨. Podrás acceder a las reglas desde el panel de juego.
-2. Crea tus equipos o decide jugar sin equipos. Añade a la mantisa el nombre de los jugadores o equipos. Se añadirán a la lista con un número de cuadrados y un botón para ¨elegir especialidad¨. No elijas especialidad aún.
-3. Una vez todos los jugadores o equipos están en la mantisa, podéis empezar a jugar!
+- Pulsa el botón "Empieza el juego!". Podrás acceder a las reglas desde el panel de juego.
+- Crea tus equipos o decide jugar sin equipos. Añade a la mantisa el nombre de los jugadores o equipos. Se añadirán a la lista con un número de bloques (sin rellenar) y un botón para "elegir especialidad". No elijas especialidad aún.
+- Una vez todos los jugadores o equipos están en la mantisa, podéis empezar a jugar!
 
 ## Los turnos
 
@@ -30,7 +29,7 @@ Una vez un jugador o equipo haya ganado, se declarará el ganador y pulsará el 
 
 ## Las categorías en detalle
 
-1. **Historia:** Classic trivial. Responde la pregunta. Decide con el resto del grupo si hace falta temporizador o no (esto debería ser rápido). Muestra la respuesta únicamente cuando hayas dado una respuesta final.
-2. **Simulación:** Mímica. Asegúrate de que la persona que adivina no pueda ver la pantalla y pulsa ¨Mostrar respuesta o información extra¨. Esta información contiene lo que hay que imitar. Pon un temporizador de 45 segundos y haz que la otra persona lo adivine!
-3. **Fórmulas:** Palabras. Asegúrate de que la persona que adivina no pueda ver la pantalla y pulsa ¨Mostrar respuesta o información extra¨. Esta información contiene una serie de palabras que hay que hacer a la otra persona adivinar de forma ¨1 palabra yo, una tú¨. Las reglas son las del juego ¨Password¨. También con temporizador de 45 segundos.
-4. **Dibujo Técnico:** Pictionary de 45 segundos. Asegúrate de que la persona que adivina no pueda ver la pantalla y pulsa ¨Mostrar respuesta o información extra¨. Esta información contiene lo que hay que dibujar.
+- **Historia:** Classic trivial. Responde la pregunta. Decide con el resto del grupo si hace falta temporizador o no (esto debería ser rápido). Muestra la respuesta únicamente cuando hayas dado una respuesta final.
+- **Simulación:** Mímica. Asegúrate de que la persona que adivina no pueda ver la pantalla y pulsa "Mostrar respuesta o información extra". Esta información contiene lo que hay que imitar. Pon un temporizador de 45 segundos y haz que la otra persona lo adivine!
+- **Fórmulas:** Palabras. Asegúrate de que la persona que adivina no pueda ver la pantalla y pulsa "Mostrar respuesta o información extra". Esta información contiene una serie de palabras que hay que hacer a la otra persona adivinar de forma "1 palabra yo, una tú". Las reglas son las del juego "Password". También con temporizador de 45 segundos.
+- **Dibujo Técnico:** Pictionary de 45 segundos. Asegúrate de que la persona que adivina no pueda ver la pantalla y pulsa "Mostrar respuesta o información extra". Esta información contiene lo que hay que dibujar.
