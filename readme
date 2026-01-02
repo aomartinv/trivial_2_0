@@ -1,8 +1,17 @@
+This is a joke repository with a little game to be played offline with my friends from university. The game is meant to be accessed via link, and then played in person with a group. What the repository provides is a scoreboard of sorts and the guidelines to play in person, but no game logic has been added.
+
+You can access the game starting your own server and then opening it via browser (useful to prototype and test changes), or via https link thanks to github.
+
+To play released version:
+  https://aomartinv.github.io/trivial_2_0/
+
+To develop:
+
 Start server:
   python -m http.server (if unfound later: python -m http.server 8000 --bind 0.0.0.0)
   Open browser and go to http://localhost:8000
 
-To open from phone:
+To open server from phone:
   Laptop and phone on same wifi
   On laptop, find IP (ipconfig, look for IPv4 address)
   On phone, open browser and go to the address
