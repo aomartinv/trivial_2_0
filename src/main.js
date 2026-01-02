@@ -141,17 +141,24 @@ const playerList = document.getElementById("player-list");
 let players = [];
 
 // ===== Load categories =====
-let categories = [];
+let allCategories = [];
+let coreCategoryNames = [];
+let categories = [];  // Will be core categories as objects
 let specialisations = {};
 
-fetch("categories.json")  // Remove ../
+fetch("categories.json")
   .then(res => res.json())
   .then(data => {
-    categories = data.core || [];
+    allCategories = data.all || [];
+    coreCategoryNames = data.core || [];
     specialisations = data.specialisations || {};
-    // Populate categorySelect
+
+    // Build categories as objects for core only
+    categories = allCategories.filter(cat => coreCategoryNames.includes(cat.name));
+
+    // Populate categorySelect with ALL categories
     categorySelect.innerHTML = '<option value="Random">Random</option>';
-    categories.forEach(cat => {
+    allCategories.forEach(cat => {
       const option = document.createElement("option");
       option.value = cat.name;
       option.textContent = cat.name;
@@ -200,7 +207,7 @@ function renderPlayers() {
     });
     specSelect.addEventListener("change", () => {
       player.specialisation = specSelect.value || null;
-      renderPlayers();  // Re-render to update boxes
+      renderPlayers();
       saveState();
     });
     li.appendChild(specSelect);
@@ -208,7 +215,7 @@ function renderPlayers() {
     const boxesContainer = document.createElement("div");
     boxesContainer.classList.add("player-boxes");
 
-    // Core categories
+    // Core categories only
     categories.forEach(cat => {
       const box = createPlayerBox(idx, cat.name, cat.color);
       boxesContainer.appendChild(box);
@@ -218,9 +225,10 @@ function renderPlayers() {
     if (player.specialisation && specialisations[player.specialisation]) {
       specialisations[player.specialisation].forEach(specCat => {
         for (let i = 0; i < specCat.count; i++) {
-          const cat = categories.find(c => c.name === specCat.name);
-          if (cat) {
-            const box = createPlayerBox(idx, `${cat.name}_${i}`, cat.color);
+          // Look up color in allCategories
+          const catObj = allCategories.find(c => c.name === specCat.name);
+          if (catObj) {
+            const box = createPlayerBox(idx, `${specCat.name}_${i}`, catObj.color);
             boxesContainer.appendChild(box);
           }
         }
@@ -234,43 +242,20 @@ function renderPlayers() {
   console.log(document.querySelectorAll(".player-box").length, "boxes rendered");
 }
 
-function createPlayerBox(playerIdx, catKey, color) {
-  const box = document.createElement("div");
-  box.classList.add("player-box");
-  box.dataset.playerIndex = playerIdx;
-  box.dataset.category = catKey;
-
-  const initial = !!getBoxState(playerIdx, catKey);
-  applyBoxStyle(box, color, initial);
-
-  box.addEventListener("click", () => {
-    const currentlyFilled = box.classList.contains("filled");
-    const newState = !currentlyFilled;
-    setBoxState(playerIdx, catKey, newState);
-    applyBoxStyle(box, color, newState);
-    saveState();
+// ===== Render category legend =====
+function renderCategoryLegend() {
+  const legendContainer = document.getElementById("category-legend");
+  if (!legendContainer || allCategories.length === 0) return;
+  legendContainer.innerHTML = "";
+  allCategories.forEach(cat => {
+    const item = document.createElement("div");
+    item.classList.add("legend-item");
+    item.innerHTML = `
+      <div class="legend-color" style="background-color: ${cat.color};"></div>
+      <span>${cat.name}</span>
+    `;
+    legendContainer.appendChild(item);
   });
-
-  return box;
-}
-
-function applyBoxStyle(box, color, filled) {
-  if (filled) {
-    box.classList.add("filled");
-    box.style.backgroundColor = color;
-    box.style.border = `2px solid ${color}`;
-  } else {
-    box.classList.remove("filled");
-    box.style.backgroundColor = hexToPale(color, 0.25);
-    box.style.border = `2px solid ${color}`;
-  }
-}
-
-function hexToPale(hex, alpha) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r},${g},${b},${alpha})`;
 }
 
 // ===== Persistence =====
@@ -356,21 +341,6 @@ showWinnerBtn.addEventListener("click", () => {
 
 window.addEventListener("beforeunload", saveState);
 
-function renderCategoryLegend() {
-  const legendContainer = document.getElementById("category-legend");
-  if (!legendContainer || categories.length === 0) return;
-  legendContainer.innerHTML = "";
-  categories.forEach(cat => {
-    const item = document.createElement("div");
-    item.classList.add("legend-item");
-    item.innerHTML = `
-      <div class="legend-color" style="background-color: ${cat.color};"></div>
-      <span>${cat.name}</span>
-    `;
-    legendContainer.appendChild(item);
-  });
-}
-
 // ===== CSV Parsing =====
 function parseCSV(csv) {
   const lines = csv.trim().split(/\r?\n/);  // Handle Windows line endings
@@ -385,5 +355,47 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')
     .then(reg => console.log('Service Worker registered'))
     .catch(err => console.log('Service Worker registration failed'));
+}
+
+function createPlayerBox(playerIdx, catKey, color) {
+  const box = document.createElement("div");
+  box.classList.add("player-box");
+  box.dataset.playerIndex = playerIdx;
+  box.dataset.category = catKey;
+
+  const initial = !!getBoxState(playerIdx, catKey);
+  applyBoxStyle(box, color, initial);
+
+  box.addEventListener("click", () => {
+    const currentlyFilled = box.classList.contains("filled");
+    const newState = !currentlyFilled;
+    setBoxState(playerIdx, catKey, newState);
+    applyBoxStyle(box, color, newState);
+    saveState();
+  });
+
+  return box;
+}
+
+function applyBoxStyle(box, color, filled) {
+  if (filled) {
+    box.classList.add("filled");
+    box.style.backgroundColor = color;
+    box.style.border = `2px solid ${color}`;
+  } else {
+    box.classList.remove("filled");
+    box.style.backgroundColor = hexToPale(color, 0.25);
+    box.style.border = `2px solid ${color}`;
+  }
+}
+
+function hexToPale(hex, alpha) {
+  if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+    hex = "#cccccc";
+  }
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
 }
 

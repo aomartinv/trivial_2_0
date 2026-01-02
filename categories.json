@@ -1,20 +1,40 @@
 {
-  "core": [
-    { "name": "History", "color": "#e74c3c" },
-    { "name": "Science", "color": "#3498db" },
-    { "name": "Geography", "color": "#2ecc71" },
-    { "name": "Art", "color": "#f1c40f" }
+  "all": [
+    { "name": "Historia", "color": "#e74c3c" },
+    { "name": "Simulación", "color": "#3498db" },
+    { "name": "Fórmulas", "color": "#2ecc71" },
+    { "name": "Dibujo Técnico", "color": "#f1c40f" },
+    { "name": "Libre", "color": "#ffffff" }
   ],
+  "core": ["Historia", "Simulación", "Fórmulas", "Dibujo Técnico"],
   "specialisations": {
-    "Explorer": [
-      { "name": "History", "count": 2 },
-      { "name": "Science", "count": 1 },
-      { "name": "Art", "count": 1 }
+    "Aeropuertos": [
+      { "name": "Historia", "count": 1 },
+      { "name": "Dibujo Técnico", "count": 1 },
+      { "name": "Fórmulas", "count": 1 },
+      { "name": "Libre", "count": 1 }
     ],
-    "Scholar": [
-      { "name": "Geography", "count": 2 },
-      { "name": "Science", "count": 1 },
-      { "name": "History", "count": 1 }
+    "Navegación": [
+      { "name": "Fórmulas", "count": 1 },
+      { "name": "Simulación", "count": 1 },
+      { "name": "Dibujo Técnico", "count": 1 },
+      { "name": "Libre", "count": 1 }
+    ],
+    "Vehículos": [
+      { "name": "Historia", "count": 1 },
+      { "name": "Simulación", "count": 2 },
+      { "name": "Fórmulas", "count": 1 }
+    ],
+    "Propulsión": [
+      { "name": "Historia", "count": 1 },
+      { "name": "Fórmulas", "count": 2 },
+      { "name": "Libre", "count": 1 }
+    ],
+    "CTA": [
+      { "name": "Historia", "count": 1 },
+      { "name": "Simulación", "count": 1 },
+      { "name": "Dibujo Técnico", "count": 1 },
+      { "name": "Fórmulas", "count": 1 }
     ]
   }
 }
