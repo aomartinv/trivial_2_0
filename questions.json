@@ -2,16 +2,16 @@
   {
     "question": "What is the capital of France?",
     "answers": ["Paris", "Berlin", "Rome", "Madrid"],
-    "correct": 0
+    "category": "Geography"
   },
   {
     "question": "Which planet is known as the Red Planet?",
     "answers": ["Earth", "Mars", "Venus", "Jupiter"],
-    "correct": 1
+    "category": "Science"
   },
   {
     "question": "Another question?",
     "answers": ["Earth", "Mars", "Venus", "Jupiter"],
-    "correct": 2
+    "category": "Science"
   }
 ]

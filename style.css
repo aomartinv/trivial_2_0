@@ -1,3 +1,10 @@
+html, body {
+  width: 100vw;
+  height: 100vh;  /* Change to 100vh to avoid scrolling */
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: sans-serif;
   text-align: center;
@@ -8,6 +15,7 @@ body {
 .screen {
   display: none;
   padding: 2rem;
+  height: 100vh;  /* Ensure full height */
 }
 
 .screen.active {
@@ -63,16 +71,54 @@ button {
   transition: 0.2s;
 }
 
-/* default unfilled style: will be set inline */
-/* .player-box.unfilled { */
-  /* background-color: #eee; base pale grey */
-/* } */
+#start-screen {
+  background-image: url('assets/sprechen-sie-matlab.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 
-/* when filled */
-/* .player-box.filled { */
-  /* background-color will be set inline from JS */
-  /* border-color: inherit; keep border same as category color */
-/* } */
+#game-screen {
+  background-image: url('assets/bro-boda.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#winner-screen {
+  background-image: url('assets/first_victory.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#start-screen,
+#game-screen,
+#winner-screen {
+  position: relative;  /* For pseudo-element positioning */
+}
+
+#start-screen::before,
+#game-screen::before,
+#winner-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);  /* Semi-transparent white overlay; adjust alpha (0.5) for more/less whiteness */
+  z-index: 1;  /* Above background image, below content */
+  pointer-events: none;  /* Allow clicks through */
+}
+
+/* Ensure content is above overlay */
+#start-screen > *,
+#game-screen > *,
+#winner-screen > * {
+  position: relative;
+  z-index: 2;
+}
 
 @media (min-width: 800px) {
   #game-container {

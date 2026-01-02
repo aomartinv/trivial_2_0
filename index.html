@@ -11,26 +11,26 @@
   <!-- Start Screen -->
   <section id="start-screen" class="screen active">
     <h1>Trivial 2.0</h1>
-    <p>A local party game</p>
-    <button id="start-btn">Start Game</button>
+    <p>Donde un juego se perdió, otro aparece</p>
+    <button id="start-btn">Empieza el juego!</button>
   </section>
 
     <!-- Main Game Screen -->
     <section id="game-screen" class="screen">
     <div id="game-container">
         <div id="question-panel" class="panel">
-        <h2>Question Panel</h2>
-        <label for="category-select">Category:</label>
+        <h2>Panel de preguntas</h2>
+        <label for="category-select">Categoría:</label>
         <select id="category-select">
-            <option value="history">History</option>
-            <option value="geography">Geography</option>
-            <option value="science">Science</option>
+            <option value="History">History</option>
+            <option value="Geography">Geography</option>
+            <option value="Science">Science</option>
         </select>
-        <button id="show-question-btn">Show Question</button>
+        <button id="show-question-btn">Mostrar pregunta</button>
 
         <div id="question-area" class="hidden">
             <p id="question-text"></p>
-            <button id="show-answer-btn">Show Answer</button>
+            <button id="show-answer-btn">Mostrar respuesta (si hay)</button>
             <p id="answer-text" class="hidden"></p>
 
             <!-- Timer UI -->
@@ -43,31 +43,31 @@
             </div>
 
             <div id="timer-controls">
-            <label for="timer-duration">Duration (sec):</label>
+            <label for="timer-duration">Duración (segundos):</label>
             <input type="number" id="timer-duration" min="5" max="300" value="30">
-            <button id="start-timer-btn">Start Timer</button>
+            <button id="start-timer-btn">Comenzar temporizador</button>
             </div>
         </div>
         </div>
 
         <div id="scoreboard-panel" class="panel">
-        <h2>Scoreboard</h2>
+        <h2>Mantisa</h2>
         <ul id="player-list"></ul>
-        <input type="text" id="new-player-name" placeholder="Add player" />
-        <button id="add-player-btn">Add</button>
+        <input type="text" id="new-player-name" placeholder="Añadir jugador" />
+        <button id="add-player-btn">Añadir</button>
         </div>
     </div>
 
-    <button id="show-winner-btn">End Game</button>
-    <button id="reset-game-btn">Reset Game</button>
+    <button id="show-winner-btn">Declarar ganador</button>
+    <button id="reset-game-btn">Reiniciar el juego</button>
     </section>
 
 
   <!-- Winner Screen -->
   <section id="winner-screen" class="screen">
-    <h1>The Winner Is...</h1>
+    <h1>Y el ganador es...</h1>
     <p id="winner-name">TBD</p>
-    <button id="restart-btn">Restart</button>
+    <button id="restart-btn">Pantalla de inicio</button>
   </section>
 </body>
 </html>

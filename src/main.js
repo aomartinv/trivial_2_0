@@ -14,7 +14,30 @@ function showScreen(screen) {
 }
 
 startBtn.addEventListener("click", () => showScreen(gameScreen));
-restartBtn.addEventListener("click", () => showScreen(startScreen));
+
+restartBtn.addEventListener("click", () => {
+  if (confirm("Restablecer todos los datos? (Se perderán los jugadores y sus puntos)")) {
+    localStorage.removeItem("trivial_state");
+    players = [];
+    playerList.innerHTML = "";
+    questionText.textContent = "";
+    answerText.textContent = "";
+    questionArea.classList.add("hidden");
+    answerText.classList.add("hidden");
+    showScreen(startScreen);
+  }
+});
+
+// ===== Load questions =====
+let questions = [];
+
+fetch("questions.json")  // Updated path: questions.json is in the root folder, main.js is in src/
+  .then(res => res.json())
+  .then(data => {
+    questions = data || [];
+    console.log("Loaded questions:", questions.length);
+  })
+  .catch(err => console.error("Failed to load questions:", err));
 
 // ===== Question panel =====
 const showQuestionBtn = document.getElementById("show-question-btn");
@@ -24,20 +47,40 @@ const questionText = document.getElementById("question-text");
 const answerText = document.getElementById("answer-text");
 const categorySelect = document.getElementById("category-select");
 
+let currentQuestion = null;
+let currentAnswer = null;
+
 showQuestionBtn.addEventListener("click", () => {
+  if (questions.length === 0) {
+    alert("No questions loaded.");
+    return;
+  }
+  const selectedCategory = categorySelect.value;  // Get selected category
+  const filteredQuestions = questions.filter(q => q.category === selectedCategory);
+  if (filteredQuestions.length === 0) {
+    alert(`No hay preguntas de la categoría: ${selectedCategory}`);
+    return;
+  }
+  const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
+  currentQuestion = filteredQuestions[randomIndex].question;
+  currentAnswer = filteredQuestions[randomIndex].answers[0];  // Assuming first answer is correct
   questionArea.classList.remove("hidden");
-  questionText.textContent = "Sample question: What is the capital of France?";
+  questionText.textContent = currentQuestion;
   answerText.classList.add("hidden");
   saveState();
 });
 
 showAnswerBtn.addEventListener("click", () => {
-  answerText.textContent = "Answer: Paris";
+  if (!currentAnswer) {
+    alert("No question shown yet.");
+    return;
+  }
+  answerText.textContent = `Respuesta: ${currentAnswer}`;
   answerText.classList.remove("hidden");
   saveState();
 });
 
-// ===== TIMER =====
+// ===== Timer =====
 let timerInterval = null;
 let timeRemaining = 0;
 const timerCircle = document.getElementById("timer-progress");
@@ -72,7 +115,7 @@ function updateTimerDisplay() {
 
 startTimerBtn.addEventListener("click", startTimer);
 
-// ===== SCOREBOARD =====
+// ===== Scoreboard =====
 const addPlayerBtn = document.getElementById("add-player-btn");
 const newPlayerName = document.getElementById("new-player-name");
 const playerList = document.getElementById("player-list");
@@ -175,8 +218,8 @@ function saveState() {
     players,
     boxes: getAllBoxStates(),
     currentCategory: categorySelect.value,
-    lastQuestion: questionText.textContent,
-    lastAnswer: answerText.textContent,
+    lastQuestion: currentQuestion,
+    lastAnswer: currentAnswer,
     questionVisible: !questionArea.classList.contains("hidden"),
     answerVisible: !answerText.classList.contains("hidden")
   };
@@ -189,14 +232,18 @@ function loadState() {
   const state = JSON.parse(saved);
   players = state.players || [];
   categorySelect.value = state.currentCategory || "history";
+  currentQuestion = state.lastQuestion || null;
+  currentAnswer = state.lastAnswer || null;
   if (state.questionVisible) {
     questionArea.classList.remove("hidden");
-    questionText.textContent = state.lastQuestion || "";
+    questionText.textContent = currentQuestion || "";
   }
   if (state.answerVisible) {
     answerText.classList.remove("hidden");
-    answerText.textContent = state.lastAnswer || "";
+    answerText.textContent = currentAnswer ? `Answer: ${currentAnswer}` : "";
   }
+
+  renderPlayers();
 }
 
 function getBoxState(playerIdx, catName) {
@@ -226,17 +273,17 @@ function getAllBoxStates() {
 // ===== End Game =====
 showWinnerBtn.addEventListener("click", () => {
   if (players.length === 0) {
-    alert("No players added.");
+    alert("No has añadido jugadores aún!");
     return;
   }
-  const winner = prompt("Who is the winner?");
+  const winner = prompt("Quién es el ganador?");
   document.getElementById("winner-name").textContent = winner || "No winner selected";
   showScreen(winnerScreen);
 });
 
 // ===== Reset Game =====
 resetBtn.addEventListener("click", () => {
-  if (confirm("Reset all game data?")) {
+  if (confirm("Restablecer todos los datos? (Se perderán los jugadores y sus puntos)")) {
     localStorage.removeItem("trivial_state");
     players = [];
     playerList.innerHTML = "";
