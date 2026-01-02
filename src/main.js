@@ -68,17 +68,21 @@ showQuestionBtn.addEventListener("click", () => {
     alert("No questions loaded.");
     return;
   }
-  const selectedCategory = categorySelect.value;  // Get selected category
-  const filteredQuestions = questions.filter(q => q.category === selectedCategory);
+  const selectedCategory = categorySelect.value;
+  let filteredQuestions = questions;
+  if (selectedCategory !== "Random") {
+    filteredQuestions = questions.filter(q => q.category === selectedCategory);
+  }
   if (filteredQuestions.length === 0) {
-    alert(`No hay preguntas de la categoría: ${selectedCategory}`);
+    alert(`No questions available for category: ${selectedCategory}`);
     return;
   }
   const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
   currentQuestion = filteredQuestions[randomIndex].question;
-  currentAnswer = filteredQuestions[randomIndex].answers[0];  // Assuming first answer is correct
+  currentAnswer = filteredQuestions[randomIndex].answers[0];
+  const actualCategory = filteredQuestions[randomIndex].category;  // Get actual category
   questionArea.classList.remove("hidden");
-  questionText.textContent = currentQuestion;
+  questionText.textContent = `${actualCategory}: ${currentQuestion}`;  // Show actual category
   answerText.classList.add("hidden");
   saveState();
 });
@@ -152,7 +156,12 @@ fetch("../categories.json")
       option.textContent = cat.name;
       categorySelect.appendChild(option);
     });
-    categorySelect.value = categories[0]?.name || "";  // Default to first category
+    // Add Random option
+    const randomOption = document.createElement("option");
+    randomOption.value = "Random";
+    randomOption.textContent = "Random";
+    categorySelect.appendChild(randomOption);
+    categorySelect.value = categories[0]?.name || "Random";  // Default to first category or Random
     loadState();
     renderPlayers();
     renderCategoryLegend();
@@ -270,12 +279,14 @@ function hexToPale(hex, alpha) {
 
 // ===== Persistence =====
 function saveState() {
+  const actualCategory = currentQuestion ? questions.find(q => q.question === currentQuestion)?.category : categorySelect.value;
   const state = {
-    players,  // Now includes specialisation
+    players,
     boxes: getAllBoxStates(),
     currentCategory: categorySelect.value,
     lastQuestion: currentQuestion,
     lastAnswer: currentAnswer,
+    lastCategory: actualCategory,  // Save actual category
     questionVisible: !questionArea.classList.contains("hidden"),
     answerVisible: !answerText.classList.contains("hidden")
   };
@@ -286,17 +297,17 @@ function loadState() {
   const saved = localStorage.getItem("trivial_state");
   if (!saved) return;
   const state = JSON.parse(saved);
-  players = state.players || [];  // Now array of objects
-  categorySelect.value = state.currentCategory || "history";
+  players = state.players || [];
+  categorySelect.value = state.currentCategory || categories[0]?.name || "";
   currentQuestion = state.lastQuestion || null;
   currentAnswer = state.lastAnswer || null;
   if (state.questionVisible) {
     questionArea.classList.remove("hidden");
-    questionText.textContent = currentQuestion || "";
+    questionText.textContent = state.lastCategory ? `${state.lastCategory}: ${currentQuestion}` : currentQuestion || "";  // Include category
   }
   if (state.answerVisible) {
     answerText.classList.remove("hidden");
-    answerText.textContent = currentAnswer ? `Answer: ${currentAnswer}` : "";
+    answerText.textContent = currentAnswer ? `Respuesta: ${currentAnswer}` : "";
   }
 
   renderPlayers();

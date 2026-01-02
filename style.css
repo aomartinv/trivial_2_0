@@ -55,11 +55,13 @@ button {
 
 .player-entry {
   margin-bottom: 8px 0;
+  text-align: left;  /* Align player names to the left */
 }
 .player-boxes {
   display: flex;
   flex-wrap: wrap;
-  margin-top:4px;
+  margin-top: 4px;
+  margin-bottom: 12px;  /* Add spacing after boxes */
   gap: 4px;
 }
 .player-box {
