@@ -172,3 +172,16 @@ button {
   font-weight: bold;
 }
 
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+

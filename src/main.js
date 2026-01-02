@@ -6,7 +6,7 @@ const winnerScreen = document.getElementById("winner-screen");
 const startBtn = document.getElementById("start-btn");
 const showWinnerBtn = document.getElementById("show-winner-btn");
 const restartBtn = document.getElementById("restart-btn");
-const resetBtn = document.getElementById("reset-game-btn");
+const resetGameBtn = document.getElementById("reset-game-btn");
 
 function showScreen(screen) {
   [startScreen, gameScreen, winnerScreen].forEach(s => s.classList.remove("active"));
@@ -28,10 +28,23 @@ restartBtn.addEventListener("click", () => {
   }
 });
 
+resetGameBtn.addEventListener("click", () => {
+  if (confirm("Restablecer todos los datos? (Se perderán los jugadores y sus puntos)")) {
+    localStorage.removeItem("trivial_state");
+    players = [];
+    playerList.innerHTML = "";
+    questionText.textContent = "";
+    answerText.textContent = "";
+    questionArea.classList.add("hidden");
+    answerText.classList.add("hidden");
+    showScreen(startScreen);
+  }
+});
+
 // ===== Load questions =====
 let questions = [];
 
-fetch("questions.json")  // Updated path: questions.json is in the root folder, main.js is in src/
+fetch("../questions.json")  // Already correct
   .then(res => res.json())
   .then(data => {
     questions = data || [];
@@ -116,28 +129,41 @@ function updateTimerDisplay() {
 startTimerBtn.addEventListener("click", startTimer);
 
 // ===== Scoreboard =====
-const addPlayerBtn = document.getElementById("add-player-btn");
-const newPlayerName = document.getElementById("new-player-name");
+const addPlayerBtn = document.getElementById("add-player-btn-game");  // Update ID
+const newPlayerName = document.getElementById("new-player-name-game");  // Update ID
 const playerList = document.getElementById("player-list");
 
 let players = [];
-let categories = [];
 
-// ===== Load categories and then render =====
-fetch("categories.json")
+// ===== Load categories =====
+let categories = [];
+let specialisations = {};
+
+fetch("../categories.json")
   .then(res => res.json())
   .then(data => {
     categories = data.core || [];
-    // console.log("Loaded categories:", categories);
+    specialisations = data.specialisations || {};
+    // Populate categorySelect
+    categorySelect.innerHTML = '<option value="">Select Category</option>';
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat.name;
+      option.textContent = cat.name;
+      categorySelect.appendChild(option);
+    });
+    categorySelect.value = categories[0]?.name || "";  // Default to first category
     loadState();
     renderPlayers();
+    renderCategoryLegend();
   })
   .catch(err => console.error("Failed to load categories:", err));
 
+// ===== Add player ===== (now in game screen)
 addPlayerBtn.addEventListener("click", () => {
   const name = newPlayerName.value.trim();
   if (!name) return;
-  players.push(name);
+  players.push({ name, specialisation: null });
   newPlayerName.value = "";
   renderPlayers();
   saveState();
@@ -146,51 +172,81 @@ addPlayerBtn.addEventListener("click", () => {
 // ===== Rendering =====
 function renderPlayers() {
   playerList.innerHTML = "";
-
-  if (categories.length === 0) {
-    console.error("Cannot render players: Categories array is empty.");
-    console.warn("No categories loaded, skipping render");
-    return;
-  }
+  if (categories.length === 0) return;
 
   players.forEach((player, idx) => {
     const li = document.createElement("li");
     li.classList.add("player-entry");
 
     const nameSpan = document.createElement("span");
-    nameSpan.textContent = player;
+    nameSpan.textContent = player.name;
+    li.appendChild(nameSpan);
+
+    // Add specialization select
+    const specSelect = document.createElement("select");
+    specSelect.classList.add("player-spec-select");
+    specSelect.innerHTML = '<option value="">No Specialisation</option>';
+    Object.keys(specialisations).forEach(spec => {
+      const option = document.createElement("option");
+      option.value = spec;
+      option.textContent = spec;
+      if (player.specialisation === spec) option.selected = true;
+      specSelect.appendChild(option);
+    });
+    specSelect.addEventListener("change", () => {
+      player.specialisation = specSelect.value || null;
+      renderPlayers();  // Re-render to update boxes
+      saveState();
+    });
+    li.appendChild(specSelect);
 
     const boxesContainer = document.createElement("div");
     boxesContainer.classList.add("player-boxes");
 
+    // Core categories
     categories.forEach(cat => {
-      const box = document.createElement("div");
-      box.classList.add("player-box");
-      box.dataset.playerIndex = idx;
-      box.dataset.category = cat.name;
-
-      // set initial appearance from storage
-      const initial = !!getBoxState(idx, cat.name);
-      applyBoxStyle(box, cat.color, initial);
-
-      // click handler: read current DOM state, compute new, persist, apply
-      box.addEventListener("click", () => {
-        const currentlyFilled = box.classList.contains("filled"); // read live
-        const newState = !currentlyFilled;
-        setBoxState(idx, cat.name, newState);    // persist
-        applyBoxStyle(box, cat.color, newState); // update DOM immediately
-        saveState();                              // optional: keep full state saved
-      });
-
+      const box = createPlayerBox(idx, cat.name, cat.color);
       boxesContainer.appendChild(box);
     });
 
-    li.appendChild(nameSpan);
+    // Specialisation categories
+    if (player.specialisation && specialisations[player.specialisation]) {
+      specialisations[player.specialisation].forEach(specCat => {
+        for (let i = 0; i < specCat.count; i++) {
+          const cat = categories.find(c => c.name === specCat.name);
+          if (cat) {
+            const box = createPlayerBox(idx, `${cat.name}_${i}`, cat.color);
+            boxesContainer.appendChild(box);
+          }
+        }
+      });
+    }
+
     li.appendChild(boxesContainer);
     playerList.appendChild(li);
   });
 
   console.log(document.querySelectorAll(".player-box").length, "boxes rendered");
+}
+
+function createPlayerBox(playerIdx, catKey, color) {
+  const box = document.createElement("div");
+  box.classList.add("player-box");
+  box.dataset.playerIndex = playerIdx;
+  box.dataset.category = catKey;
+
+  const initial = !!getBoxState(playerIdx, catKey);
+  applyBoxStyle(box, color, initial);
+
+  box.addEventListener("click", () => {
+    const currentlyFilled = box.classList.contains("filled");
+    const newState = !currentlyFilled;
+    setBoxState(playerIdx, catKey, newState);
+    applyBoxStyle(box, color, newState);
+    saveState();
+  });
+
+  return box;
 }
 
 function applyBoxStyle(box, color, filled) {
@@ -215,7 +271,7 @@ function hexToPale(hex, alpha) {
 // ===== Persistence =====
 function saveState() {
   const state = {
-    players,
+    players,  // Now includes specialisation
     boxes: getAllBoxStates(),
     currentCategory: categorySelect.value,
     lastQuestion: currentQuestion,
@@ -230,7 +286,7 @@ function loadState() {
   const saved = localStorage.getItem("trivial_state");
   if (!saved) return;
   const state = JSON.parse(saved);
-  players = state.players || [];
+  players = state.players || [];  // Now array of objects
   categorySelect.value = state.currentCategory || "history";
   currentQuestion = state.lastQuestion || null;
   currentAnswer = state.lastAnswer || null;
@@ -259,13 +315,22 @@ function setBoxState(playerIdx, catName, value) {
   localStorage.setItem("trivial_state", JSON.stringify(state));
 }
 
+// Update getAllBoxStates to handle specialization boxes correctly
 function getAllBoxStates() {
   const boxes = {};
-  players.forEach((_, idx) => {
+  players.forEach((player, idx) => {
     boxes[idx] = {};
     categories.forEach(cat => {
       boxes[idx][cat.name] = getBoxState(idx, cat.name);
     });
+    // Add specialisation boxes
+    if (player.specialisation && specialisations[player.specialisation]) {
+      specialisations[player.specialisation].forEach(specCat => {
+        for (let i = 0; i < specCat.count; i++) {
+          boxes[idx][`${specCat.name}_${i}`] = getBoxState(idx, `${specCat.name}_${i}`);
+        }
+      });
+    }
   });
   return boxes;
 }
@@ -277,22 +342,24 @@ showWinnerBtn.addEventListener("click", () => {
     return;
   }
   const winner = prompt("Quién es el ganador?");
+  if (winner === null) return;  // Do nothing if cancel pressed
   document.getElementById("winner-name").textContent = winner || "No winner selected";
   showScreen(winnerScreen);
 });
 
-// ===== Reset Game =====
-resetBtn.addEventListener("click", () => {
-  if (confirm("Restablecer todos los datos? (Se perderán los jugadores y sus puntos)")) {
-    localStorage.removeItem("trivial_state");
-    players = [];
-    playerList.innerHTML = "";
-    questionText.textContent = "";
-    answerText.textContent = "";
-    questionArea.classList.add("hidden");
-    answerText.classList.add("hidden");
-    showScreen(startScreen);
-  }
-});
-
 window.addEventListener("beforeunload", saveState);
+
+function renderCategoryLegend() {
+  const legendContainer = document.getElementById("category-legend");
+  if (!legendContainer || categories.length === 0) return;
+  legendContainer.innerHTML = "";
+  categories.forEach(cat => {
+    const item = document.createElement("div");
+    item.classList.add("legend-item");
+    item.innerHTML = `
+      <div class="legend-color" style="background-color: ${cat.color};"></div>
+      <span>${cat.name}</span>
+    `;
+    legendContainer.appendChild(item);
+  });
+}

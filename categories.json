@@ -7,12 +7,14 @@
   ],
   "specialisations": {
     "Explorer": [
-      { "name": "Travel", "color": "#1abc9c" },
-      { "name": "Nature", "color": "#27ae60" }
+      { "name": "History", "count": 2 },
+      { "name": "Science", "count": 1 },
+      { "name": "Art", "count": 1 }
     ],
     "Scholar": [
-      { "name": "Philosophy", "color": "#9b59b6" },
-      { "name": "Literature", "color": "#8e44ad" }
+      { "name": "Geography", "count": 2 },
+      { "name": "Science", "count": 1 },
+      { "name": "History", "count": 1 }
     ]
   }
 }
